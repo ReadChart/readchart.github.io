@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="Redis准备1.安装 Linux： 通过apt等包管理直接安装 编译源代码安装   Windows 下载 解压 运行    2.运行 修改.conf：  bind参数用于连接以及绑定：当为127.0.0.1即为环回地址，仅监听本地端口；当为0.0.0.0即广播地址则监听全部。  port参数用于设置监听端口：默认为6379  requirepass参数用于设置初级验证密码  masteraut">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis学习">
+<meta property="og:url" content="https://bkdonions.github.io/2020/08/12/Redis%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:site_name" content="记仇日记">
+<meta property="og:description" content="Redis准备1.安装 Linux： 通过apt等包管理直接安装 编译源代码安装   Windows 下载 解压 运行    2.运行 修改.conf：  bind参数用于连接以及绑定：当为127.0.0.1即为环回地址，仅监听本地端口；当为0.0.0.0即广播地址则监听全部。  port参数用于设置监听端口：默认为6379  requirepass参数用于设置初级验证密码  masteraut">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://cdn.worldvectorlogo.com/logos/redis.svg">
+<meta property="article:published_time" content="2020-08-11T16:48:30.000Z">
+<meta property="article:modified_time" content="2020-08-11T08:50:38.996Z">
+<meta property="article:author" content="Richard T">
+<meta property="article:tag" content="none">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.worldvectorlogo.com/logos/redis.svg">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>Redis学习</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+      
+<link rel="stylesheet" href="/css/rtl.css">
+
+    
+    <!-- rss -->
+    
+    
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="http://github.com/bkdonions" target="_blank" rel="noopener">Projects</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" href="/2020/07/25/Vue-Learning/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://bkdonions.github.io/2020/08/12/Redis%E5%AD%A6%E4%B9%A0/" target="_blank" rel="noopener"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://bkdonions.github.io/2020/08/12/Redis%E5%AD%A6%E4%B9%A0/&text=Redis学习" target="_blank" rel="noopener"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://bkdonions.github.io/2020/08/12/Redis%E5%AD%A6%E4%B9%A0/&title=Redis学习" target="_blank" rel="noopener"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://bkdonions.github.io/2020/08/12/Redis%E5%AD%A6%E4%B9%A0/&is_video=false&description=Redis学习" target="_blank" rel="noopener"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Redis学习&body=Check out this article: https://bkdonions.github.io/2020/08/12/Redis%E5%AD%A6%E4%B9%A0/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://bkdonions.github.io/2020/08/12/Redis%E5%AD%A6%E4%B9%A0/&title=Redis学习" target="_blank" rel="noopener"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://bkdonions.github.io/2020/08/12/Redis%E5%AD%A6%E4%B9%A0/&title=Redis学习" target="_blank" rel="noopener"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://bkdonions.github.io/2020/08/12/Redis%E5%AD%A6%E4%B9%A0/&title=Redis学习" target="_blank" rel="noopener"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://bkdonions.github.io/2020/08/12/Redis%E5%AD%A6%E4%B9%A0/&title=Redis学习" target="_blank" rel="noopener"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://bkdonions.github.io/2020/08/12/Redis%E5%AD%A6%E4%B9%A0/&name=Redis学习&description=" target="_blank" rel="noopener"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=https://bkdonions.github.io/2020/08/12/Redis%E5%AD%A6%E4%B9%A0/&t=Redis学习" target="_blank" rel="noopener"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis准备"><span class="toc-number">1.</span> <span class="toc-text">Redis准备</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-安装"><span class="toc-number">1.1.</span> <span class="toc-text">1.安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-运行"><span class="toc-number">1.2.</span> <span class="toc-text">2.运行</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-daemonize-是否以守护进程的形式启动-后台启动"><span class="toc-number">1.2.0.1.</span> <span class="toc-text">(1)daemonize :是否以守护进程的形式启动(后台启动)</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-pidfile-指定redis-pid文件地址-其内容为redis对应的进程号"><span class="toc-number">1.2.0.2.</span> <span class="toc-text">(2)pidfile:指定redis.pid文件地址(其内容为redis对应的进程号)</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-port-redis启动使用的端口号"><span class="toc-number">1.2.0.3.</span> <span class="toc-text">(3)port:redis启动使用的端口号</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#4-bind-监听的IP地址"><span class="toc-number">1.2.0.4.</span> <span class="toc-text">(4)bind:监听的IP地址</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#5-指定监听unix套接字socket的文件的位置"><span class="toc-number">1.2.0.5.</span> <span class="toc-text">(5)指定监听unix套接字socket的文件的位置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#6-设置unix套接字文件的权限"><span class="toc-number">1.2.0.6.</span> <span class="toc-text">(6)设置unix套接字文件的权限</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#7-连接超时时间-客户端空闲多长时间，关闭链接。0表示不关闭"><span class="toc-number">1.2.0.7.</span> <span class="toc-text">(7)连接超时时间(客户端空闲多长时间，关闭链接。0表示不关闭)</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#8-保持tcp连接的时间"><span class="toc-number">1.2.0.8.</span> <span class="toc-text">(8)保持tcp连接的时间</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#9-日志级别loglevel"><span class="toc-number">1.2.0.9.</span> <span class="toc-text">(9)日志级别loglevel</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#10-指定日志文件-可以保存在文件中或者输出到屏幕上"><span class="toc-number">1.2.0.10.</span> <span class="toc-text">(10)指定日志文件:可以保存在文件中或者输出到屏幕上</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#11-是否启用系统日志"><span class="toc-number">1.2.0.11.</span> <span class="toc-text">(11)是否启用系统日志</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#11-指定系统日志身份"><span class="toc-number">1.2.0.12.</span> <span class="toc-text">(11)指定系统日志身份</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#12-指定syslog的设备，必须是用户或者在LOCAL0-LOCAL7这八个数中取值"><span class="toc-number">1.2.0.13.</span> <span class="toc-text">(12)指定syslog的设备，必须是用户或者在LOCAL0-LOCAL7这八个数中取值</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#13-设置redis的字典-数据库-数目：字典编号是从0开始的"><span class="toc-number">1.2.0.14.</span> <span class="toc-text">(13)设置redis的字典(数据库)数目：字典编号是从0开始的</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#14-数据持久化设置之保存频率设置：这个频率不是时间，也是一个条件，它定期将内存数据保存到硬盘上"><span class="toc-number">1.2.0.15.</span> <span class="toc-text">(14)数据持久化设置之保存频率设置：这个频率不是时间，也是一个条件，它定期将内存数据保存到硬盘上</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#15-数据持久化设置之停止写入数据条件：当出现错误-可能是硬盘错误、权限不够、或者其他错误-时停止写入数据"><span class="toc-number">1.2.0.16.</span> <span class="toc-text">(15)数据持久化设置之停止写入数据条件：当出现错误(可能是硬盘错误、权限不够、或者其他错误)时停止写入数据</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#16-是否在保存持久化文件时对文件rdb进行压缩"><span class="toc-number">1.2.0.17.</span> <span class="toc-text">(16)是否在保存持久化文件时对文件rdb进行压缩</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#17-在保存持久化文件时是否检查条目数，这在一定程度会影响redis的性能"><span class="toc-number">1.2.0.18.</span> <span class="toc-text">(17)在保存持久化文件时是否检查条目数，这在一定程度会影响redis的性能</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#18-指定持久化文件的文件名"><span class="toc-number">1.2.0.19.</span> <span class="toc-text">(18)指定持久化文件的文件名</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#19-指定redis持久化文件目录"><span class="toc-number">1.2.0.20.</span> <span class="toc-text">(19)指定redis持久化文件目录</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#20-设置redis主从之从redis设置："><span class="toc-number">1.2.0.21.</span> <span class="toc-text">(20)设置redis主从之从redis设置：</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#21-当从redis服务器断开与主redis服务器的连接，从redis是否响应客户端请求"><span class="toc-number">1.2.0.22.</span> <span class="toc-text">(21)当从redis服务器断开与主redis服务器的连接，从redis是否响应客户端请求</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#22-设置从服务器只读-redis-2-6添加的参数"><span class="toc-number">1.2.0.23.</span> <span class="toc-text">(22)设置从服务器只读(redis 2.6添加的参数)</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#25-设置批量传输读写数据或ping响应的超时时间"><span class="toc-number">1.2.0.24.</span> <span class="toc-text">(25)设置批量传输读写数据或ping响应的超时时间</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#26-是否不用将数据包拼接成大包再进行发送"><span class="toc-number">1.2.0.25.</span> <span class="toc-text">(26)是否不用将数据包拼接成大包再进行发送</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#27-当前从服务器的优先级"><span class="toc-number">1.2.0.26.</span> <span class="toc-text">(27)当前从服务器的优先级</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#28-redis服务器是否启用密码，如果启用则填写密码，如果不启用则将本项注释掉"><span class="toc-number">1.2.0.27.</span> <span class="toc-text">(28)redis服务器是否启用密码，如果启用则填写密码，如果不启用则将本项注释掉</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#29-给redis命令起一个别名"><span class="toc-number">1.2.0.28.</span> <span class="toc-text">(29)给redis命令起一个别名</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#30-客户端最大连接数设置"><span class="toc-number">1.2.0.29.</span> <span class="toc-text">(30)客户端最大连接数设置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#31-最大可使用的内存限制设置：（单元bytes即B）"><span class="toc-number">1.2.0.30.</span> <span class="toc-text">(31)最大可使用的内存限制设置：（单元bytes即B）</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#33-数据删除时采用的样本数"><span class="toc-number">1.2.0.31.</span> <span class="toc-text">(33)数据删除时采用的样本数</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#34-是否开启通过appendonly的方式添加持久化数据-aof与rdb是两种不同的持久化策略"><span class="toc-number">1.2.0.32.</span> <span class="toc-text">(34)是否开启通过appendonly的方式添加持久化数据(aof与rdb是两种不同的持久化策略)</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#35-通过aof持久化数据时保存的文件名称"><span class="toc-number">1.2.0.33.</span> <span class="toc-text">(35)通过aof持久化数据时保存的文件名称</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#36-将内存数据同步到硬盘中的三种模式："><span class="toc-number">1.2.0.34.</span> <span class="toc-text">(36)将内存数据同步到硬盘中的三种模式：</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#37-自动重写aof文件百分比"><span class="toc-number">1.2.0.35.</span> <span class="toc-text">(37)自动重写aof文件百分比</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#38-自动重写aof文件的最小大小"><span class="toc-number">1.2.0.36.</span> <span class="toc-text">(38)自动重写aof文件的最小大小</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#39-Lua脚本执行时间限制-毫秒-：最大执行时间"><span class="toc-number">1.2.0.37.</span> <span class="toc-text">(39)Lua脚本执行时间限制(毫秒)：最大执行时间</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#40-慢-查询或写入-日志最小时间：-微秒"><span class="toc-number">1.2.0.38.</span> <span class="toc-text">(40)慢(查询或写入)日志最小时间：(微秒)</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#41-慢日志最大占用的内存数"><span class="toc-number">1.2.0.39.</span> <span class="toc-text">(41)慢日志最大占用的内存数</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#42-Hash编码使用高速内存数据结构的条目阈值"><span class="toc-number">1.2.0.40.</span> <span class="toc-text">(42)Hash编码使用高速内存数据结构的条目阈值</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#43-链表编码使用调整内存数据结构的条目阈值设置"><span class="toc-number">1.2.0.41.</span> <span class="toc-text">(43)链表编码使用调整内存数据结构的条目阈值设置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#44-集合编码使用调整内存数据结构的条目阈值设置"><span class="toc-number">1.2.0.42.</span> <span class="toc-text">(44)集合编码使用调整内存数据结构的条目阈值设置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#45-有序集合编码时使用调整内存数据结构的条目阈值设置"><span class="toc-number">1.2.0.43.</span> <span class="toc-text">(45)有序集合编码时使用调整内存数据结构的条目阈值设置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#46-重建hash表时，如果内存不足，是否尽快释放内存"><span class="toc-number">1.2.0.44.</span> <span class="toc-text">(46)重建hash表时，如果内存不足，是否尽快释放内存</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#47-客户端输出缓冲区大小限制：根据不同的客户端可以有不同的设置"><span class="toc-number">1.2.0.45.</span> <span class="toc-text">(47)客户端输出缓冲区大小限制：根据不同的客户端可以有不同的设置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#48-hz"><span class="toc-number">1.2.0.46.</span> <span class="toc-text">(48)hz</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#49-当子进程重写AOF文件，以下选项开启时，AOF文件会每产生32M数据同步一次。这有助于更快写入文件到磁盘避免延迟"><span class="toc-number">1.2.0.47.</span> <span class="toc-text">(49)当子进程重写AOF文件，以下选项开启时，AOF文件会每产生32M数据同步一次。这有助于更快写入文件到磁盘避免延迟</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#50-加载其他redis配置文件"><span class="toc-number">1.2.0.48.</span> <span class="toc-text">(50)加载其他redis配置文件</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-字符串String"><span class="toc-number">1.3.</span> <span class="toc-text">2.字符串String</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-哈希Hash（重点）"><span class="toc-number">1.4.</span> <span class="toc-text">3.哈希Hash（重点）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#实例"><span class="toc-number">1.4.1.</span> <span class="toc-text">实例</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#命令"><span class="toc-number">1.4.2.</span> <span class="toc-text">命令</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-列表List"><span class="toc-number">1.5.</span> <span class="toc-text">4.列表List</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-集合Set"><span class="toc-number">1.6.</span> <span class="toc-text">5.集合Set</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-有序集合Sorted-Set"><span class="toc-number">1.7.</span> <span class="toc-text">6.有序集合Sorted Set</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-HyperLogLog"><span class="toc-number">1.8.</span> <span class="toc-text">7.HyperLogLog</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-发布订阅"><span class="toc-number">1.9.</span> <span class="toc-text">8.发布订阅</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-事物"><span class="toc-number">1.10.</span> <span class="toc-text">9.事物</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-脚本"><span class="toc-number">1.11.</span> <span class="toc-text">10.脚本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-连接"><span class="toc-number">1.12.</span> <span class="toc-text">11.连接</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-服务器"><span class="toc-number">1.13.</span> <span class="toc-text">12.服务器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-GEO"><span class="toc-number">1.14.</span> <span class="toc-text">13.GEO</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Redis学习
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">记仇日记</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2020-08-11T16:48:30.000Z" itemprop="datePublished">2020-08-11</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/none/" rel="tag">none</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p><img src="https://cdn.worldvectorlogo.com/logos/redis.svg" alt="redislogo"></p>
+<h2 id="Redis准备"><a href="#Redis准备" class="headerlink" title="Redis准备"></a>Redis准备</h2><h3 id="1-安装"><a href="#1-安装" class="headerlink" title="1.安装"></a>1.安装</h3><ol>
+<li>Linux：<ul>
+<li>通过apt等包管理直接安装</li>
+<li>编译源代码安装</li>
+</ul>
+</li>
+<li>Windows<ul>
+<li><a href="https://github.com/tporadowski/redis/releases" target="_blank" rel="noopener">下载</a></li>
+<li>解压</li>
+<li>运行</li>
+</ul>
+</li>
+</ol>
+<h3 id="2-运行"><a href="#2-运行" class="headerlink" title="2.运行"></a>2.运行</h3><ol>
+<li><p>修改.conf：</p>
+<ul>
+<li><p>bind参数用于连接以及绑定：当为<code>127.0.0.1</code>即为环回地址，仅监听本地端口；当为<code>0.0.0.0</code>即广播地址则监听全部。</p>
+</li>
+<li><p>port参数用于设置监听端口：默认为<a href="https://www.zhihu.com/question/20084750" target="_blank" rel="noopener">6379</a></p>
+</li>
+<li><p>requirepass参数用于设置初级验证密码</p>
+</li>
+<li><p>masterauth参数设置主服务器验证</p>
+</li>
+<li><blockquote>
+<h5 id="1-daemonize-是否以守护进程的形式启动-后台启动"><a href="#1-daemonize-是否以守护进程的形式启动-后台启动" class="headerlink" title="(1)daemonize :是否以守护进程的形式启动(后台启动)"></a>(1)daemonize :是否以守护进程的形式启动(后台启动)</h5><p>用法：<code>daemonize yes|no</code></p>
+<p>默认值为：no</p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">daemonize no</span><br></pre></td></tr></table></figure>
+
+<h5 id="2-pidfile-指定redis-pid文件地址-其内容为redis对应的进程号"><a href="#2-pidfile-指定redis-pid文件地址-其内容为redis对应的进程号" class="headerlink" title="(2)pidfile:指定redis.pid文件地址(其内容为redis对应的进程号)"></a>(2)pidfile:指定redis.pid文件地址(其内容为redis对应的进程号)</h5><p>用法：<code>pidfile 文件路径</code></p>
+<p>默认值：<code>/var/run/redis.pid</code></p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pidfile &#x2F;var&#x2F;run&#x2F;redis.pid</span><br></pre></td></tr></table></figure>
+
+<h5 id="3-port-redis启动使用的端口号"><a href="#3-port-redis启动使用的端口号" class="headerlink" title="(3)port:redis启动使用的端口号"></a>(3)port:redis启动使用的端口号</h5><p>用法：<code>port 端口号</code></p>
+<p>默认值：<code>6379</code></p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">port 6379</span><br></pre></td></tr></table></figure>
+
+<h5 id="4-bind-监听的IP地址"><a href="#4-bind-监听的IP地址" class="headerlink" title="(4)bind:监听的IP地址"></a>(4)bind:监听的IP地址</h5><p>用法：<code>bind IP地址</code></p>
+<p>默认值：<code>127.0.0.1</code></p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bind 127.0.0.1</span><br></pre></td></tr></table></figure>
+
+<h5 id="5-指定监听unix套接字socket的文件的位置"><a href="#5-指定监听unix套接字socket的文件的位置" class="headerlink" title="(5)指定监听unix套接字socket的文件的位置"></a>(5)指定监听unix套接字socket的文件的位置</h5><p>用法：<code>unixsocket 文件地址</code></p>
+<p>默认值：/tmp/redis.sock</p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">unixsocket &#x2F;tmp&#x2F;redis.sock</span><br></pre></td></tr></table></figure>
+
+<h5 id="6-设置unix套接字文件的权限"><a href="#6-设置unix套接字文件的权限" class="headerlink" title="(6)设置unix套接字文件的权限"></a>(6)设置unix套接字文件的权限</h5><p>用法：<code>unixsocketperm 权限值</code></p>
+<p>默认值：755</p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">unixsocketperm 755</span><br></pre></td></tr></table></figure>
+
+<h5 id="7-连接超时时间-客户端空闲多长时间，关闭链接。0表示不关闭"><a href="#7-连接超时时间-客户端空闲多长时间，关闭链接。0表示不关闭" class="headerlink" title="(7)连接超时时间(客户端空闲多长时间，关闭链接。0表示不关闭)"></a>(7)连接超时时间(客户端空闲多长时间，关闭链接。0表示不关闭)</h5><p>用法：<code>timeout 时间值</code></p>
+<p>默认值：0</p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">timeout 0</span><br></pre></td></tr></table></figure>
+
+<h5 id="8-保持tcp连接的时间"><a href="#8-保持tcp连接的时间" class="headerlink" title="(8)保持tcp连接的时间"></a>(8)保持tcp连接的时间</h5><p>用法：<code>tcp-keepalive 时间</code></p>
+<p>默认值：0</p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tcp-keepalive 0</span><br></pre></td></tr></table></figure>
+
+<h5 id="9-日志级别loglevel"><a href="#9-日志级别loglevel" class="headerlink" title="(9)日志级别loglevel"></a>(9)日志级别loglevel</h5><p>用法：<code>loglevel 日志级别</code></p>
+<p>日志级别可选值:</p>
+<ul>
+<li>debug :一些提示信息，对开发与测试很有用</li>
+<li>verbose：有很多有用的信息</li>
+<li>notice：选择适当的verbose信息</li>
+<li>warning:只记录重要的而且的严重的信息</li>
+</ul>
+<p>默认值：notice</p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">loglevel notice</span><br></pre></td></tr></table></figure>
+
+<h5 id="10-指定日志文件-可以保存在文件中或者输出到屏幕上"><a href="#10-指定日志文件-可以保存在文件中或者输出到屏幕上" class="headerlink" title="(10)指定日志文件:可以保存在文件中或者输出到屏幕上"></a>(10)指定日志文件:可以保存在文件中或者输出到屏幕上</h5><p>用法：<code>logfile 日志文件地址|stdout</code></p>
+<p>默认值：stdout(标准输出)</p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">logfile &#x2F;var&#x2F;logs&#x2F;redis.log</span><br></pre></td></tr></table></figure>
+
+<h5 id="11-是否启用系统日志"><a href="#11-是否启用系统日志" class="headerlink" title="(11)是否启用系统日志"></a>(11)是否启用系统日志</h5><p>用法：<code>syslog-enabled yes|no</code></p>
+<p>默认值：no</p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">syslog-enabled no</span><br></pre></td></tr></table></figure>
+
+<h5 id="11-指定系统日志身份"><a href="#11-指定系统日志身份" class="headerlink" title="(11)指定系统日志身份"></a>(11)指定系统日志身份</h5><p>用法：<code>syslog-ident 身份</code></p>
+<p>默认值：redis</p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">syslog-ident redis</span><br></pre></td></tr></table></figure>
+
+<h5 id="12-指定syslog的设备，必须是用户或者在LOCAL0-LOCAL7这八个数中取值"><a href="#12-指定syslog的设备，必须是用户或者在LOCAL0-LOCAL7这八个数中取值" class="headerlink" title="(12)指定syslog的设备，必须是用户或者在LOCAL0-LOCAL7这八个数中取值"></a>(12)指定syslog的设备，必须是用户或者在LOCAL0-LOCAL7这八个数中取值</h5><p>用法：<code>syslog-facility 设备</code></p>
+<p>默认值：local0</p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">syslog-facility local0</span><br></pre></td></tr></table></figure>
+
+<h5 id="13-设置redis的字典-数据库-数目：字典编号是从0开始的"><a href="#13-设置redis的字典-数据库-数目：字典编号是从0开始的" class="headerlink" title="(13)设置redis的字典(数据库)数目：字典编号是从0开始的"></a>(13)设置redis的字典(数据库)数目：字典编号是从0开始的</h5><p>用法：<code>databases 字典数目</code></p>
+<p>默认值：16</p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">databases 16</span><br></pre></td></tr></table></figure>
+
+<h5 id="14-数据持久化设置之保存频率设置：这个频率不是时间，也是一个条件，它定期将内存数据保存到硬盘上"><a href="#14-数据持久化设置之保存频率设置：这个频率不是时间，也是一个条件，它定期将内存数据保存到硬盘上" class="headerlink" title="(14)数据持久化设置之保存频率设置：这个频率不是时间，也是一个条件，它定期将内存数据保存到硬盘上"></a>(14)数据持久化设置之保存频率设置：这个频率不是时间，也是一个条件，它定期将内存数据保存到硬盘上</h5><p>用法：<code>save 时间秒数 变化的键数</code></p>
+<p>即在一定时间段内，至少变化多少个键时才保存到硬盘上</p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">save 900 1   #表示在900秒内至少有1个键的值发生改变时才保存save 300 10  #表示在300秒内至少有10个键的值发生变化时才保存</span><br></pre></td></tr></table></figure>
+
+<h5 id="15-数据持久化设置之停止写入数据条件：当出现错误-可能是硬盘错误、权限不够、或者其他错误-时停止写入数据"><a href="#15-数据持久化设置之停止写入数据条件：当出现错误-可能是硬盘错误、权限不够、或者其他错误-时停止写入数据" class="headerlink" title="(15)数据持久化设置之停止写入数据条件：当出现错误(可能是硬盘错误、权限不够、或者其他错误)时停止写入数据"></a>(15)数据持久化设置之停止写入数据条件：当出现错误(可能是硬盘错误、权限不够、或者其他错误)时停止写入数据</h5><p>用法：<code>stop-writes-on-bgsave-error yes|no</code></p>
+<p>默认值：yes</p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">stop-writes-on-bgsave-error yes</span><br></pre></td></tr></table></figure>
+
+<h5 id="16-是否在保存持久化文件时对文件rdb进行压缩"><a href="#16-是否在保存持久化文件时对文件rdb进行压缩" class="headerlink" title="(16)是否在保存持久化文件时对文件rdb进行压缩"></a>(16)是否在保存持久化文件时对文件rdb进行压缩</h5><p>用法：<code>rdbcompression yes|no</code></p>
+<p>默认值：yes</p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rdbcompression yes</span><br></pre></td></tr></table></figure>
+
+<h5 id="17-在保存持久化文件时是否检查条目数，这在一定程度会影响redis的性能"><a href="#17-在保存持久化文件时是否检查条目数，这在一定程度会影响redis的性能" class="headerlink" title="(17)在保存持久化文件时是否检查条目数，这在一定程度会影响redis的性能"></a>(17)在保存持久化文件时是否检查条目数，这在一定程度会影响redis的性能</h5><p>用法：<code>rdbchecksum yes|no</code></p>
+<p>默认值：yes</p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rdbchecksum yes</span><br></pre></td></tr></table></figure>
+
+<h5 id="18-指定持久化文件的文件名"><a href="#18-指定持久化文件的文件名" class="headerlink" title="(18)指定持久化文件的文件名"></a>(18)指定持久化文件的文件名</h5><p>用法：<code>dbfilename 文件名</code></p>
+<p>默认值：dump.rdb</p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dbfilename redis-2015-02.rdb</span><br></pre></td></tr></table></figure>
+
+<h5 id="19-指定redis持久化文件目录"><a href="#19-指定redis持久化文件目录" class="headerlink" title="(19)指定redis持久化文件目录"></a>(19)指定redis持久化文件目录</h5><p>用法：<code>dir 目录</code></p>
+<p>默认值：./</p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dir ..&#x2F;data</span><br></pre></td></tr></table></figure>
+
+<h5 id="20-设置redis主从之从redis设置："><a href="#20-设置redis主从之从redis设置：" class="headerlink" title="(20)设置redis主从之从redis设置："></a>(20)设置redis主从之从redis设置：</h5><p>用法：<code>slaveof 主redis的IP 主redis的端口</code></p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">slaveof 127.0.0.1 6380</span><br></pre></td></tr></table></figure>
+
+<p>(20)设置redis主从之主redis验证密码</p>
+<p>用法：<code>masterauth 主redis验证密码</code></p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">masterauth 123456</span><br></pre></td></tr></table></figure>
+
+<h5 id="21-当从redis服务器断开与主redis服务器的连接，从redis是否响应客户端请求"><a href="#21-当从redis服务器断开与主redis服务器的连接，从redis是否响应客户端请求" class="headerlink" title="(21)当从redis服务器断开与主redis服务器的连接，从redis是否响应客户端请求"></a>(21)当从redis服务器断开与主redis服务器的连接，从redis是否响应客户端请求</h5><p>说明：当从redis服务器断开与主redis服务器的连接时，从服务器可以通过以下两种方式响应客户端请求：</p>
+<ul>
+<li>第一种：当slave-serve-stale-data这个参数设置为yes，则从服务器还会正常响应客户端请求，但是因为没有与主服务器同步数据，因此数据可能不完整。</li>
+<li>第二种：当slave-serve-stale-data这个参数设置为no,则从服务器会响应”SYNC with master in progress”(正在与主服务器同步)这样的提示，但info和slaveof命令除外</li>
+</ul>
+<p>用法：<code>slave-serve-stale-data yes|no</code></p>
+<p>默认值：yes</p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">slave-serve-stale-data yes</span><br></pre></td></tr></table></figure>
+
+<h5 id="22-设置从服务器只读-redis-2-6添加的参数"><a href="#22-设置从服务器只读-redis-2-6添加的参数" class="headerlink" title="(22)设置从服务器只读(redis 2.6添加的参数)"></a>(22)设置从服务器只读(redis 2.6添加的参数)</h5><p>用法：<code>slave-read-only yes|no</code></p>
+<p>默认值：yes</p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">slave-read-only yes</span><br></pre></td></tr></table></figure>
+
+<p>(23)设置从服务器发送ping命令的间隔时间</p>
+<p>用法：repl-ping-slave-period 时间(秒)</p>
+<p>默认值：10</p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">repl-ping-slave-period 10</span><br></pre></td></tr></table></figure>
+
+<h5 id="25-设置批量传输读写数据或ping响应的超时时间"><a href="#25-设置批量传输读写数据或ping响应的超时时间" class="headerlink" title="(25)设置批量传输读写数据或ping响应的超时时间"></a>(25)设置批量传输读写数据或ping响应的超时时间</h5><p>用法：<code>repl-timeout 时间(秒)</code></p>
+<p>默认值：60</p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">repl-timeout 60</span><br></pre></td></tr></table></figure>
+
+<h5 id="26-是否不用将数据包拼接成大包再进行发送"><a href="#26-是否不用将数据包拼接成大包再进行发送" class="headerlink" title="(26)是否不用将数据包拼接成大包再进行发送"></a>(26)是否不用将数据包拼接成大包再进行发送</h5><p>TCP_NODELAY 不使用Nagle算法，不会将小包进行拼接成大包再进行发送，直接将小包发送出去，会使得小包时候用户体验非常</p>
+<p>用法：<code>repl-disable-tcp-nodelay yes|no</code></p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">repl-disable-tcp-nodelay no</span><br></pre></td></tr></table></figure>
+
+<h5 id="27-当前从服务器的优先级"><a href="#27-当前从服务器的优先级" class="headerlink" title="(27)当前从服务器的优先级"></a>(27)当前从服务器的优先级</h5><p>用法：<code>slave-priority 优先级</code></p>
+<p>默认值：100</p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">slave-priority 100</span><br></pre></td></tr></table></figure>
+
+<h5 id="28-redis服务器是否启用密码，如果启用则填写密码，如果不启用则将本项注释掉"><a href="#28-redis服务器是否启用密码，如果启用则填写密码，如果不启用则将本项注释掉" class="headerlink" title="(28)redis服务器是否启用密码，如果启用则填写密码，如果不启用则将本项注释掉"></a>(28)redis服务器是否启用密码，如果启用则填写密码，如果不启用则将本项注释掉</h5><p>用法：<code>requirepass 密码</code></p>
+<p>默认：没有密码</p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">requirepass 123456</span><br></pre></td></tr></table></figure>
+
+<h5 id="29-给redis命令起一个别名"><a href="#29-给redis命令起一个别名" class="headerlink" title="(29)给redis命令起一个别名"></a>(29)给redis命令起一个别名</h5><p>用法：<code>rename-command 命令 命令别名</code></p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rename-command mget mg</span><br></pre></td></tr></table></figure>
+
+<h5 id="30-客户端最大连接数设置"><a href="#30-客户端最大连接数设置" class="headerlink" title="(30)客户端最大连接数设置"></a>(30)客户端最大连接数设置</h5><p>用法：<code>maxclients 连接数</code></p>
+<p>默认值：10000</p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">maxclients 10000</span><br></pre></td></tr></table></figure>
+
+<h5 id="31-最大可使用的内存限制设置：（单元bytes即B）"><a href="#31-最大可使用的内存限制设置：（单元bytes即B）" class="headerlink" title="(31)最大可使用的内存限制设置：（单元bytes即B）"></a>(31)最大可使用的内存限制设置：（单元bytes即B）</h5><p>用法：<code>maxmemory 内存值</code></p>
+<p>如：</p>
+<p>maxmemory 1000000;<br>(32)当数据满之后数据删除的算法：</p>
+<p>用法：maxmemorty-policy 算法</p>
+<p>可用的算法：</p>
+<ul>
+<li>volatile-lru -&gt; 使用LRU算法来删除过期的set</li>
+<li>allkeys-lru -&gt; 删除任何遵循LRU算法的key</li>
+<li>volatile-random -&gt;随机地删除过期set中的key</li>
+<li>allkeys-&gt;random -&gt; 随机地删除一个key</li>
+<li>volatile-ttl -&gt; 删除最近即将过期的key（the nearest expire time (minor TTL)）</li>
+<li>noeviction -&gt; 根本不过期，写操作直接报错</li>
+</ul>
+<p>默认值：volatile-lru</p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">maxmemory-policy volatile-lru</span><br></pre></td></tr></table></figure>
+
+<h5 id="33-数据删除时采用的样本数"><a href="#33-数据删除时采用的样本数" class="headerlink" title="(33)数据删除时采用的样本数"></a>(33)数据删除时采用的样本数</h5><p>对于处理redis内存来说，LRU和minor TTL算法不是精确的，而是近似的（估计的）算法。所以我们会检查某些样本来达到内存检查的目的。默认的样本数是3，你可以修改它。</p>
+<p>用法：<code>maxmemorty-samples 数字</code></p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">maxmemory-samples 3</span><br></pre></td></tr></table></figure>
+
+<h5 id="34-是否开启通过appendonly的方式添加持久化数据-aof与rdb是两种不同的持久化策略"><a href="#34-是否开启通过appendonly的方式添加持久化数据-aof与rdb是两种不同的持久化策略" class="headerlink" title="(34)是否开启通过appendonly的方式添加持久化数据(aof与rdb是两种不同的持久化策略)"></a>(34)是否开启通过appendonly的方式添加持久化数据(aof与rdb是两种不同的持久化策略)</h5><p>默认情况下，Redis会异步的把数据保存到硬盘。如果你的应用场景允许因为系统崩溃等极端情况而导致最新数据丢失#的话，那这种做法已经很ok了。否则你应该打开‘append only’模式，开启这种模式后，Redis会在#appendonly.aof文件中添加每一个写操作，这个文件会在Redis启动时被读取来在内存中重新构建数据集。</p>
+<p>注意：如果你需要，你可以同时开启‘append only’模式和异步dumps模式（你需要注释掉上面的‘save’表达式来禁#止dumps），这种情况下，Redis重建数据集时会优先使用appendonly.aof而忽略dump.rdb</p>
+<p>用法：<code>appendonly yes|no</code></p>
+<p>默认值：no</p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">appendonly no</span><br></pre></td></tr></table></figure>
+
+<h5 id="35-通过aof持久化数据时保存的文件名称"><a href="#35-通过aof持久化数据时保存的文件名称" class="headerlink" title="(35)通过aof持久化数据时保存的文件名称"></a>(35)通过aof持久化数据时保存的文件名称</h5><p>用法：<code>appendfilename 文件名称</code></p>
+<p>默认：appendonly.aof</p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">appendfilename appendonly.aof</span><br></pre></td></tr></table></figure>
+
+<h5 id="36-将内存数据同步到硬盘中的三种模式："><a href="#36-将内存数据同步到硬盘中的三种模式：" class="headerlink" title="(36)将内存数据同步到硬盘中的三种模式："></a>(36)将内存数据同步到硬盘中的三种模式：</h5><ul>
+<li>第一种：no:不fsync, 只是通知OS可以flush数据了，具体是否flush取决于OS.性能更好.</li>
+<li>第二种：always: 每次写入append only 日志文件后都会fsync . 性能差，但很安全.</li>
+<li>第三种：everysec: 没间隔1秒进行一次fsync. 折中</li>
+</ul>
+<p>用法：<code>appendfsync no|always|everysec</code></p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">appendfsync everysec</span><br></pre></td></tr></table></figure>
+
+<h5 id="37-自动重写aof文件百分比"><a href="#37-自动重写aof文件百分比" class="headerlink" title="(37)自动重写aof文件百分比"></a>(37)自动重写aof文件百分比</h5><p>用法：<code>auto-aof-rewrite-percentage</code></p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">auto-aof-rewrite-percentage 100</span><br></pre></td></tr></table></figure>
+
+<h5 id="38-自动重写aof文件的最小大小"><a href="#38-自动重写aof文件的最小大小" class="headerlink" title="(38)自动重写aof文件的最小大小"></a>(38)自动重写aof文件的最小大小</h5><p>用法：<code>auto-aof-rewirte-min-size 大小</code></p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">auto-aof-rewrite-min-size 64mb</span><br></pre></td></tr></table></figure>
+
+<h5 id="39-Lua脚本执行时间限制-毫秒-：最大执行时间"><a href="#39-Lua脚本执行时间限制-毫秒-：最大执行时间" class="headerlink" title="(39)Lua脚本执行时间限制(毫秒)：最大执行时间"></a>(39)Lua脚本执行时间限制(毫秒)：最大执行时间</h5><p>用法：<code>lua-time-limit 时间</code></p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lua-time-limit 5000</span><br></pre></td></tr></table></figure>
+
+<h5 id="40-慢-查询或写入-日志最小时间：-微秒"><a href="#40-慢-查询或写入-日志最小时间：-微秒" class="headerlink" title="(40)慢(查询或写入)日志最小时间：(微秒)"></a>(40)慢(查询或写入)日志最小时间：(微秒)</h5><p>用法：<code>slowlog-log-slower-than 微秒数</code></p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">slowlog-log-slower-than 10000</span><br></pre></td></tr></table></figure>
+
+<h5 id="41-慢日志最大占用的内存数"><a href="#41-慢日志最大占用的内存数" class="headerlink" title="(41)慢日志最大占用的内存数"></a>(41)慢日志最大占用的内存数</h5><p>用法：<code>slowlog-max-len 内存数</code></p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">slowlog-max-len 128</span><br></pre></td></tr></table></figure>
+
+<h5 id="42-Hash编码使用高速内存数据结构的条目阈值"><a href="#42-Hash编码使用高速内存数据结构的条目阈值" class="headerlink" title="(42)Hash编码使用高速内存数据结构的条目阈值"></a>(42)Hash编码使用高速内存数据结构的条目阈值</h5><p>如果redisObject的type 成员值是 REDIS_LIST 类型的,则当该list 的 elem数小于配置值: hash-max-ziplist-entries 或者elem_value字符串的长度小于 hash-max-ziplist-value, 则可以编码成 REDIS_ENCODING_ZIPLIST 类型存储,以节约内存. 否则采用 Dict 来存储</p>
+<p>用法：<code>hash-max-ziplist-entries 元素(项)的数目</code></p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hash-max-ziplist-entries 512</span><br></pre></td></tr></table></figure>
+
+<p>用法：<code>hash-max-ziplist-value 元素的长度</code></p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hash-max-ziplist-value 64</span><br></pre></td></tr></table></figure>
+
+<h5 id="43-链表编码使用调整内存数据结构的条目阈值设置"><a href="#43-链表编码使用调整内存数据结构的条目阈值设置" class="headerlink" title="(43)链表编码使用调整内存数据结构的条目阈值设置"></a>(43)链表编码使用调整内存数据结构的条目阈值设置</h5><p>相同哈希值的列表可以用特殊的表示方式存储，以节约空间</p>
+<p>如 type 是 REDIS_LIST 类型的,如果其 entry 小于配置值: list-max-ziplist-entries 或 value字符串的长度小于 list-max-ziplist-value，则可以编码成 REDIS_ENCODING_ZIPLIST 类型存储,以节约内存; 否则采用 REDIS_ENCODING_LINKEDLIST 来存储</p>
+<p>用法：<code>list-max-ziplist-entries 元素数目</code></p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">list-max-ziplist-entries 512</span><br></pre></td></tr></table></figure>
+
+<p>用法：<code>list-max-ziplist-value 元素的长度</code></p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">list-max-ziplist-value 64</span><br></pre></td></tr></table></figure>
+
+<h5 id="44-集合编码使用调整内存数据结构的条目阈值设置"><a href="#44-集合编码使用调整内存数据结构的条目阈值设置" class="headerlink" title="(44)集合编码使用调整内存数据结构的条目阈值设置"></a>(44)集合编码使用调整内存数据结构的条目阈值设置</h5><p>如 type 是 REDIS_SET 类型的,如果其值可以表示成数字类型且 entry 小于配置值set-max-intset-entries, 则可以编码成 REDIS_ENCODING_INTSET 类型存储,以节约内存; 否则采用 Dict类型来存储</p>
+<p>用法：<code>set-max-intset-entries 元素条目数</code></p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set-max-intset-entries 512</span><br></pre></td></tr></table></figure>
+
+<h5 id="45-有序集合编码时使用调整内存数据结构的条目阈值设置"><a href="#45-有序集合编码时使用调整内存数据结构的条目阈值设置" class="headerlink" title="(45)有序集合编码时使用调整内存数据结构的条目阈值设置"></a>(45)有序集合编码时使用调整内存数据结构的条目阈值设置</h5><p>用法：<code>zset-max-ziplist-entries 元素条目数</code></p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zset-max-ziplist-entries 128</span><br></pre></td></tr></table></figure>
+
+<p>用法：<code>zset-max-ziplist-value 元素长度</code></p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zset-max-ziplist-value 64</span><br></pre></td></tr></table></figure>
+
+<h5 id="46-重建hash表时，如果内存不足，是否尽快释放内存"><a href="#46-重建hash表时，如果内存不足，是否尽快释放内存" class="headerlink" title="(46)重建hash表时，如果内存不足，是否尽快释放内存"></a>(46)重建hash表时，如果内存不足，是否尽快释放内存</h5><p>重建hash表的时候如果内存不足 如果此值设置为no则延时，如果为yes则尽快释放内存</p>
+<p>用法：<code>activerehashing yes|no</code></p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">activerehashing yes</span><br></pre></td></tr></table></figure>
+
+<h5 id="47-客户端输出缓冲区大小限制：根据不同的客户端可以有不同的设置"><a href="#47-客户端输出缓冲区大小限制：根据不同的客户端可以有不同的设置" class="headerlink" title="(47)客户端输出缓冲区大小限制：根据不同的客户端可以有不同的设置"></a>(47)客户端输出缓冲区大小限制：根据不同的客户端可以有不同的设置</h5><p>主要客户端可以分为：</p>
+<ul>
+<li>第一种： normal -&gt; 普通客户端</li>
+<li>第二种： slave -&gt; 从服务器客户端和监控客户端</li>
+<li>第三种： pubsub -&gt; 至少订阅了一个频道或模式的订阅客户端</li>
+</ul>
+<p>用法：<code>client-output-buffer-limit 客户端 硬性限制 软性限制 软性时间限制</code></p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">client-output-buffer-limit normal 0 0 0client-output-buffer-limit slave 256mb 64mb 60client-output-buffer-limit pubsub 32mb 8mb 60</span><br></pre></td></tr></table></figure>
+
+<h5 id="48-hz"><a href="#48-hz" class="headerlink" title="(48)hz"></a>(48)hz</h5><p>设置Redis后台任务执行频率，比如清除过期键任务：值在1到500之间，建议不要超过100，在10至100之间为最佳</p>
+<p>用法：<code>hz 任务数</code></p>
+<p>默认值：10</p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hz 10</span><br></pre></td></tr></table></figure>
+
+<h5 id="49-当子进程重写AOF文件，以下选项开启时，AOF文件会每产生32M数据同步一次。这有助于更快写入文件到磁盘避免延迟"><a href="#49-当子进程重写AOF文件，以下选项开启时，AOF文件会每产生32M数据同步一次。这有助于更快写入文件到磁盘避免延迟" class="headerlink" title="(49)当子进程重写AOF文件，以下选项开启时，AOF文件会每产生32M数据同步一次。这有助于更快写入文件到磁盘避免延迟"></a>(49)当子进程重写AOF文件，以下选项开启时，AOF文件会每产生32M数据同步一次。这有助于更快写入文件到磁盘避免延迟</h5><p>用法：<code>aof-rewrite-incremental-fsync yes|no</code></p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">aof-rewrite-incremental-fsync yes</span><br></pre></td></tr></table></figure>
+
+<h5 id="50-加载其他redis配置文件"><a href="#50-加载其他redis配置文件" class="headerlink" title="(50)加载其他redis配置文件"></a>(50)加载其他redis配置文件</h5><p>用法：<code>include 文件地址</code></p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">include redis-6380.conf</span><br></pre></td></tr></table></figure>
+</blockquote>
+</li>
+</ul>
+</li>
+<li><p>运行：</p>
+<ul>
+<li><p>默认情况下redis仅用内置规则运行，不直接使用任何.conf配置文件，顾原解压文件携带的.conf的文件只用作相关配置文档，同时可以自己写相关.conf来进行配置，选择自己需要的配置进行开发</p>
+</li>
+<li><pre><code class="bash">❯ ./redis-server.exe --<span class="built_in">help</span>
+Usage: ./redis-server [/path/to/redis.conf] [options]
+       ./redis-server - (<span class="built_in">read</span> config from stdin)
+       ./redis-server -v or --version
+       ./redis-server -h or --<span class="built_in">help</span>
+       ./redis-server --<span class="built_in">test</span>-memory &lt;megabytes&gt;
+
+Examples:
+       ./redis-server (run the server with default conf)
+       ./redis-server /etc/redis/6379.conf
+       ./redis-server --port 7777
+       ./redis-server --port 7777 --replicaof 127.0.0.1 8888
+       ./redis-server /etc/myredis.conf --loglevel verbose
+
+Sentinel mode:
+       ./redis-server /etc/sentinel.conf --sentinel
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">## Redis使用</span><br><span class="line"></span><br><span class="line">### 1.键&#96;key&#96;</span><br><span class="line"></span><br><span class="line">语法：</span><br><span class="line"></span><br><span class="line">&#96;&#96;&#96;bash</span><br><span class="line">COMMAND KEY_NAME</span><br></pre></td></tr></table></figure>
+</code></pre>
+</li>
+</ul>
+</li>
+</ol>
+<p>实例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6300&gt; SET RichardTung Learning</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6300&gt; GET RichardTung</span><br><span class="line"><span class="string">"Learning"</span></span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><code>DEL &lt;key&gt;</code>删除指定key</li>
+<li><code>DUMP &lt;key&gt;</code>序列化给定key，返回值为被序列化的值</li>
+<li><code>EXISTS &lt;key&gt;</code>检查key是否存在</li>
+<li><code>EXPIRE &lt;key&gt; &lt;seconds&gt;</code>设定过期时间，单位为秒</li>
+<li><code>EXPIREAT &lt;key&gt; &lt;timestamp&gt;</code>设定过期时间，通过以秒计的时间戳设置</li>
+<li><code>PEXPIRE &lt;key&gt; &lt;milliseconds&gt;</code>设定过期时间，单位为毫秒</li>
+<li><code>PEXPIREAT &lt;key&gt; &lt;milliseconds-timestamp&gt;</code>设定过期时间，通过以毫秒计的时间戳设置</li>
+<li><code>KEYS &lt;pattern&gt;</code>查找所有符合pattern的key</li>
+<li><code>MOVE &lt;key&gt; &lt;db&gt;</code>将key移动到给定的数据库</li>
+<li><code>PERSIST &lt;key&gt;</code>持久化key，取消过期时间</li>
+<li><code>PTTL &lt;key&gt;</code>以毫秒为单位返回剩余时间</li>
+<li><code>TTL &lt;key&gt;</code>以秒为单位返回剩余时间</li>
+<li><code>RANDOMKEY</code>从当前数据库中返回随机key</li>
+<li><code>RENAME &lt;key&gt; &lt;newkeyname&gt;</code>将key重命名至newkeyname（无检查）</li>
+<li><code>RENAMENX &lt;key&gt; &lt;newkeyname&gt;</code>当newkeyname不存在时将key改名为newkeyname（有检查）</li>
+<li><code>SCAN &lt;cursor&gt; &lt;MATCH pattern&gt; &lt;COUNT count&gt;</code>迭代数据库中的数据库键</li>
+<li><code>TYPE &lt;key&gt;</code>返回key的类型</li>
+</ol>
+<h3 id="2-字符串String"><a href="#2-字符串String" class="headerlink" title="2.字符串String"></a>2.字符串<code>String</code></h3><ol>
+<li><code>SET &lt;key&gt; &lt;value&gt;</code>指定key对应的value值</li>
+<li><code>GET &lt;key&gt;</code>获取key对应的value值</li>
+<li><code>GETRANGE &lt;key&gt; &lt;startIndex&gt; &lt;endIndex&gt;</code>获取key对应指定始末的值</li>
+<li><code>GETSET &lt;key&gt; &lt;value&gt;</code>给key指定新值并返回旧值</li>
+<li><code>GETBIT &lt;key&gt; &lt;offset&gt;</code>获取key指定偏移量的值</li>
+<li><code>MGET &lt;key1&gt; [&lt;key2&gt;..]</code>获取一个或以上的key的值</li>
+<li><code>SETBIT &lt;key&gt; &lt;offset&gt; &lt;value&gt;</code>对 key 所储存的字符串值，设置或清除指定偏移量上的位(bit)。</li>
+<li><code>SETEX &lt;key&gt; &lt;seconds&gt; &lt;value&gt;</code>给key指定值value同时赋予tty，以秒为单位</li>
+<li><code>SETNX &lt;key&gt; &lt;value&gt;</code>当key不存在时才设置key的值，若key已存在，则不设置</li>
+<li><code>SETRANGE &lt;key&gt; &lt;offset&gt; &lt;value&gt;</code>给key对应value值中指定偏移量起始赋予新的value值</li>
+<li><code>STRLEN &lt;key&gt;</code>获取key的字符长度</li>
+<li><code>MSET &lt;key1&gt; &lt;value1&gt; [key2 value2...]</code>同时设置多个键值对</li>
+<li><code>MSETNX &lt;key1&gt; &lt;value1&gt; [key2 value2...]</code>同时设置多个键值对，当key不存在时才设置，<strong>注意：当其中一个key存在时，整条语句都不起作用</strong></li>
+<li><code>PSETEX &lt;key&gt; &lt;milliseconds&gt; &lt;value&gt;</code>给key指定值value同时赋予ptty，以毫秒为单位</li>
+<li><code>INCR &lt;key&gt;</code>将key中存储的数字增1</li>
+<li><code>INCRBY &lt;key&gt; &lt;increment&gt;</code>将key中存储的数字增加步长量increment，此时increment为Integer</li>
+<li><code>INCRBYFLOAT &lt;key&gt; &lt;incrementInFloat&gt;</code>将key中存储的数字增加步长量increment，此时increment为float</li>
+<li><code>DECR &lt;key&gt;</code>将key中存储的数字自减1</li>
+<li><code>DECRBY &lt;key&gt; &lt;decrement&gt;</code>将key中存储的数字自减步长量decrement</li>
+<li><code>APPEND &lt;key&gt; &lt;value&gt;</code>将key中值后接value</li>
+</ol>
+<h3 id="3-哈希Hash（重点）"><a href="#3-哈希Hash（重点）" class="headerlink" title="3.哈希Hash（重点）"></a>3.哈希<code>Hash</code>（重点）</h3><p>Redis hash 是一个 string 类型的 field（字段） 和 value（值） 的映射表，hash 特别适合用于存储对象。</p>
+<p>Redis 中每个 hash 可以存储 2^32 - 1 键值对（40多亿）。</p>
+<h4 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt;  HMSET runoobkey name <span class="string">"redis tutorial"</span> description <span class="string">"redis basic commands for caching"</span> likes 20 visitors 23000</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379&gt;  HGETALL runoobkey</span><br><span class="line">1) <span class="string">"name"</span></span><br><span class="line">2) <span class="string">"redis tutorial"</span></span><br><span class="line">3) <span class="string">"description"</span></span><br><span class="line">4) <span class="string">"redis basic commands for caching"</span></span><br><span class="line">5) <span class="string">"likes"</span></span><br><span class="line">6) <span class="string">"20"</span></span><br><span class="line">7) <span class="string">"visitors"</span></span><br><span class="line">8) <span class="string">"23000"</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h4><ol>
+<li><code>HDEL &lt;key&gt; &lt;field1&gt; [field2]</code>删除一个或多个哈希表字段</li>
+<li><code>HEXISTS &lt;key&gt; &lt;field&gt;</code>查看哈希表key中，指定字段是否存在</li>
+<li><code>HGET &lt;key&gt; &lt;field&gt;</code></li>
+<li><code>HGETALL &lt;key&gt;</code></li>
+<li><code>HINCRBY &lt;key&gt; &lt;field&gt; &lt;increment&gt;</code></li>
+<li><code>HINCRBYFLOAT &lt;key&gt; &lt;field&gt; &lt;incrementInFloat&gt;</code></li>
+<li><code>HKEYS &lt;key&gt;</code></li>
+<li><code>HLEN &lt;key&gt;</code></li>
+<li><code>HMGET &lt;key&gt; &lt;field1&gt; [field2...]</code></li>
+<li><code>HMSET &lt;key&gt; &lt;field1&gt; &lt;value1&gt; [&lt;field2&gt; &lt;value2&gt;...]</code></li>
+<li><code>&lt;key&gt;</code></li>
+<li><code>&lt;key&gt;</code></li>
+<li><code>&lt;key&gt;</code></li>
+<li><code>&lt;key&gt;</code></li>
+</ol>
+<h3 id="4-列表List"><a href="#4-列表List" class="headerlink" title="4.列表List"></a>4.列表<code>List</code></h3><h3 id="5-集合Set"><a href="#5-集合Set" class="headerlink" title="5.集合Set"></a>5.集合<code>Set</code></h3><h3 id="6-有序集合Sorted-Set"><a href="#6-有序集合Sorted-Set" class="headerlink" title="6.有序集合Sorted Set"></a>6.有序集合<code>Sorted Set</code></h3><h3 id="7-HyperLogLog"><a href="#7-HyperLogLog" class="headerlink" title="7.HyperLogLog"></a>7.HyperLogLog</h3><h3 id="8-发布订阅"><a href="#8-发布订阅" class="headerlink" title="8.发布订阅"></a>8.发布订阅</h3><h3 id="9-事物"><a href="#9-事物" class="headerlink" title="9.事物"></a>9.事物</h3><h3 id="10-脚本"><a href="#10-脚本" class="headerlink" title="10.脚本"></a>10.脚本</h3><h3 id="11-连接"><a href="#11-连接" class="headerlink" title="11.连接"></a>11.连接</h3><h3 id="12-服务器"><a href="#12-服务器" class="headerlink" title="12.服务器"></a>12.服务器</h3><h3 id="13-GEO"><a href="#13-GEO" class="headerlink" title="13.GEO"></a>13.GEO</h3>
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="http://github.com/bkdonions" target="_blank" rel="noopener">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis准备"><span class="toc-number">1.</span> <span class="toc-text">Redis准备</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-安装"><span class="toc-number">1.1.</span> <span class="toc-text">1.安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-运行"><span class="toc-number">1.2.</span> <span class="toc-text">2.运行</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-daemonize-是否以守护进程的形式启动-后台启动"><span class="toc-number">1.2.0.1.</span> <span class="toc-text">(1)daemonize :是否以守护进程的形式启动(后台启动)</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-pidfile-指定redis-pid文件地址-其内容为redis对应的进程号"><span class="toc-number">1.2.0.2.</span> <span class="toc-text">(2)pidfile:指定redis.pid文件地址(其内容为redis对应的进程号)</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-port-redis启动使用的端口号"><span class="toc-number">1.2.0.3.</span> <span class="toc-text">(3)port:redis启动使用的端口号</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#4-bind-监听的IP地址"><span class="toc-number">1.2.0.4.</span> <span class="toc-text">(4)bind:监听的IP地址</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#5-指定监听unix套接字socket的文件的位置"><span class="toc-number">1.2.0.5.</span> <span class="toc-text">(5)指定监听unix套接字socket的文件的位置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#6-设置unix套接字文件的权限"><span class="toc-number">1.2.0.6.</span> <span class="toc-text">(6)设置unix套接字文件的权限</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#7-连接超时时间-客户端空闲多长时间，关闭链接。0表示不关闭"><span class="toc-number">1.2.0.7.</span> <span class="toc-text">(7)连接超时时间(客户端空闲多长时间，关闭链接。0表示不关闭)</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#8-保持tcp连接的时间"><span class="toc-number">1.2.0.8.</span> <span class="toc-text">(8)保持tcp连接的时间</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#9-日志级别loglevel"><span class="toc-number">1.2.0.9.</span> <span class="toc-text">(9)日志级别loglevel</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#10-指定日志文件-可以保存在文件中或者输出到屏幕上"><span class="toc-number">1.2.0.10.</span> <span class="toc-text">(10)指定日志文件:可以保存在文件中或者输出到屏幕上</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#11-是否启用系统日志"><span class="toc-number">1.2.0.11.</span> <span class="toc-text">(11)是否启用系统日志</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#11-指定系统日志身份"><span class="toc-number">1.2.0.12.</span> <span class="toc-text">(11)指定系统日志身份</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#12-指定syslog的设备，必须是用户或者在LOCAL0-LOCAL7这八个数中取值"><span class="toc-number">1.2.0.13.</span> <span class="toc-text">(12)指定syslog的设备，必须是用户或者在LOCAL0-LOCAL7这八个数中取值</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#13-设置redis的字典-数据库-数目：字典编号是从0开始的"><span class="toc-number">1.2.0.14.</span> <span class="toc-text">(13)设置redis的字典(数据库)数目：字典编号是从0开始的</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#14-数据持久化设置之保存频率设置：这个频率不是时间，也是一个条件，它定期将内存数据保存到硬盘上"><span class="toc-number">1.2.0.15.</span> <span class="toc-text">(14)数据持久化设置之保存频率设置：这个频率不是时间，也是一个条件，它定期将内存数据保存到硬盘上</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#15-数据持久化设置之停止写入数据条件：当出现错误-可能是硬盘错误、权限不够、或者其他错误-时停止写入数据"><span class="toc-number">1.2.0.16.</span> <span class="toc-text">(15)数据持久化设置之停止写入数据条件：当出现错误(可能是硬盘错误、权限不够、或者其他错误)时停止写入数据</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#16-是否在保存持久化文件时对文件rdb进行压缩"><span class="toc-number">1.2.0.17.</span> <span class="toc-text">(16)是否在保存持久化文件时对文件rdb进行压缩</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#17-在保存持久化文件时是否检查条目数，这在一定程度会影响redis的性能"><span class="toc-number">1.2.0.18.</span> <span class="toc-text">(17)在保存持久化文件时是否检查条目数，这在一定程度会影响redis的性能</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#18-指定持久化文件的文件名"><span class="toc-number">1.2.0.19.</span> <span class="toc-text">(18)指定持久化文件的文件名</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#19-指定redis持久化文件目录"><span class="toc-number">1.2.0.20.</span> <span class="toc-text">(19)指定redis持久化文件目录</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#20-设置redis主从之从redis设置："><span class="toc-number">1.2.0.21.</span> <span class="toc-text">(20)设置redis主从之从redis设置：</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#21-当从redis服务器断开与主redis服务器的连接，从redis是否响应客户端请求"><span class="toc-number">1.2.0.22.</span> <span class="toc-text">(21)当从redis服务器断开与主redis服务器的连接，从redis是否响应客户端请求</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#22-设置从服务器只读-redis-2-6添加的参数"><span class="toc-number">1.2.0.23.</span> <span class="toc-text">(22)设置从服务器只读(redis 2.6添加的参数)</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#25-设置批量传输读写数据或ping响应的超时时间"><span class="toc-number">1.2.0.24.</span> <span class="toc-text">(25)设置批量传输读写数据或ping响应的超时时间</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#26-是否不用将数据包拼接成大包再进行发送"><span class="toc-number">1.2.0.25.</span> <span class="toc-text">(26)是否不用将数据包拼接成大包再进行发送</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#27-当前从服务器的优先级"><span class="toc-number">1.2.0.26.</span> <span class="toc-text">(27)当前从服务器的优先级</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#28-redis服务器是否启用密码，如果启用则填写密码，如果不启用则将本项注释掉"><span class="toc-number">1.2.0.27.</span> <span class="toc-text">(28)redis服务器是否启用密码，如果启用则填写密码，如果不启用则将本项注释掉</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#29-给redis命令起一个别名"><span class="toc-number">1.2.0.28.</span> <span class="toc-text">(29)给redis命令起一个别名</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#30-客户端最大连接数设置"><span class="toc-number">1.2.0.29.</span> <span class="toc-text">(30)客户端最大连接数设置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#31-最大可使用的内存限制设置：（单元bytes即B）"><span class="toc-number">1.2.0.30.</span> <span class="toc-text">(31)最大可使用的内存限制设置：（单元bytes即B）</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#33-数据删除时采用的样本数"><span class="toc-number">1.2.0.31.</span> <span class="toc-text">(33)数据删除时采用的样本数</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#34-是否开启通过appendonly的方式添加持久化数据-aof与rdb是两种不同的持久化策略"><span class="toc-number">1.2.0.32.</span> <span class="toc-text">(34)是否开启通过appendonly的方式添加持久化数据(aof与rdb是两种不同的持久化策略)</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#35-通过aof持久化数据时保存的文件名称"><span class="toc-number">1.2.0.33.</span> <span class="toc-text">(35)通过aof持久化数据时保存的文件名称</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#36-将内存数据同步到硬盘中的三种模式："><span class="toc-number">1.2.0.34.</span> <span class="toc-text">(36)将内存数据同步到硬盘中的三种模式：</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#37-自动重写aof文件百分比"><span class="toc-number">1.2.0.35.</span> <span class="toc-text">(37)自动重写aof文件百分比</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#38-自动重写aof文件的最小大小"><span class="toc-number">1.2.0.36.</span> <span class="toc-text">(38)自动重写aof文件的最小大小</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#39-Lua脚本执行时间限制-毫秒-：最大执行时间"><span class="toc-number">1.2.0.37.</span> <span class="toc-text">(39)Lua脚本执行时间限制(毫秒)：最大执行时间</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#40-慢-查询或写入-日志最小时间：-微秒"><span class="toc-number">1.2.0.38.</span> <span class="toc-text">(40)慢(查询或写入)日志最小时间：(微秒)</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#41-慢日志最大占用的内存数"><span class="toc-number">1.2.0.39.</span> <span class="toc-text">(41)慢日志最大占用的内存数</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#42-Hash编码使用高速内存数据结构的条目阈值"><span class="toc-number">1.2.0.40.</span> <span class="toc-text">(42)Hash编码使用高速内存数据结构的条目阈值</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#43-链表编码使用调整内存数据结构的条目阈值设置"><span class="toc-number">1.2.0.41.</span> <span class="toc-text">(43)链表编码使用调整内存数据结构的条目阈值设置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#44-集合编码使用调整内存数据结构的条目阈值设置"><span class="toc-number">1.2.0.42.</span> <span class="toc-text">(44)集合编码使用调整内存数据结构的条目阈值设置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#45-有序集合编码时使用调整内存数据结构的条目阈值设置"><span class="toc-number">1.2.0.43.</span> <span class="toc-text">(45)有序集合编码时使用调整内存数据结构的条目阈值设置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#46-重建hash表时，如果内存不足，是否尽快释放内存"><span class="toc-number">1.2.0.44.</span> <span class="toc-text">(46)重建hash表时，如果内存不足，是否尽快释放内存</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#47-客户端输出缓冲区大小限制：根据不同的客户端可以有不同的设置"><span class="toc-number">1.2.0.45.</span> <span class="toc-text">(47)客户端输出缓冲区大小限制：根据不同的客户端可以有不同的设置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#48-hz"><span class="toc-number">1.2.0.46.</span> <span class="toc-text">(48)hz</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#49-当子进程重写AOF文件，以下选项开启时，AOF文件会每产生32M数据同步一次。这有助于更快写入文件到磁盘避免延迟"><span class="toc-number">1.2.0.47.</span> <span class="toc-text">(49)当子进程重写AOF文件，以下选项开启时，AOF文件会每产生32M数据同步一次。这有助于更快写入文件到磁盘避免延迟</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#50-加载其他redis配置文件"><span class="toc-number">1.2.0.48.</span> <span class="toc-text">(50)加载其他redis配置文件</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-字符串String"><span class="toc-number">1.3.</span> <span class="toc-text">2.字符串String</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-哈希Hash（重点）"><span class="toc-number">1.4.</span> <span class="toc-text">3.哈希Hash（重点）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#实例"><span class="toc-number">1.4.1.</span> <span class="toc-text">实例</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#命令"><span class="toc-number">1.4.2.</span> <span class="toc-text">命令</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-列表List"><span class="toc-number">1.5.</span> <span class="toc-text">4.列表List</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-集合Set"><span class="toc-number">1.6.</span> <span class="toc-text">5.集合Set</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-有序集合Sorted-Set"><span class="toc-number">1.7.</span> <span class="toc-text">6.有序集合Sorted Set</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-HyperLogLog"><span class="toc-number">1.8.</span> <span class="toc-text">7.HyperLogLog</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-发布订阅"><span class="toc-number">1.9.</span> <span class="toc-text">8.发布订阅</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-事物"><span class="toc-number">1.10.</span> <span class="toc-text">9.事物</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-脚本"><span class="toc-number">1.11.</span> <span class="toc-text">10.脚本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-连接"><span class="toc-number">1.12.</span> <span class="toc-text">11.连接</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-服务器"><span class="toc-number">1.13.</span> <span class="toc-text">12.服务器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-GEO"><span class="toc-number">1.14.</span> <span class="toc-text">13.GEO</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=https://bkdonions.github.io/2020/08/12/Redis%E5%AD%A6%E4%B9%A0/" target="_blank" rel="noopener"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=https://bkdonions.github.io/2020/08/12/Redis%E5%AD%A6%E4%B9%A0/&text=Redis学习" target="_blank" rel="noopener"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=https://bkdonions.github.io/2020/08/12/Redis%E5%AD%A6%E4%B9%A0/&title=Redis学习" target="_blank" rel="noopener"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https://bkdonions.github.io/2020/08/12/Redis%E5%AD%A6%E4%B9%A0/&is_video=false&description=Redis学习" target="_blank" rel="noopener"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Redis学习&body=Check out this article: https://bkdonions.github.io/2020/08/12/Redis%E5%AD%A6%E4%B9%A0/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=https://bkdonions.github.io/2020/08/12/Redis%E5%AD%A6%E4%B9%A0/&title=Redis学习" target="_blank" rel="noopener"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=https://bkdonions.github.io/2020/08/12/Redis%E5%AD%A6%E4%B9%A0/&title=Redis学习" target="_blank" rel="noopener"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=https://bkdonions.github.io/2020/08/12/Redis%E5%AD%A6%E4%B9%A0/&title=Redis学习" target="_blank" rel="noopener"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=https://bkdonions.github.io/2020/08/12/Redis%E5%AD%A6%E4%B9%A0/&title=Redis学习" target="_blank" rel="noopener"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=https://bkdonions.github.io/2020/08/12/Redis%E5%AD%A6%E4%B9%A0/&name=Redis学习&description=" target="_blank" rel="noopener"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=https://bkdonions.github.io/2020/08/12/Redis%E5%AD%A6%E4%B9%A0/&t=Redis学习" target="_blank" rel="noopener"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2020
+    Richard T
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="http://github.com/bkdonions" target="_blank" rel="noopener">Projects</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+
+    <!-- jquery -->
+
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+
+<!-- clipboard -->
+
+  
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+    <script type="text/javascript">
+        (function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-173531821-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+
+<!-- Baidu Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>
