@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="Git清除指定文件记录本文参考源：Mr.True@csdn Github Official Docs 起因是自己误操作将Intellij Idea的配置文件commit到git记录上面，考虑到部分配置涉及个人隐私，所以想清除掉指定文件的记录 建议在删除记录之前先将需要保存在本地但又不想commit到git记录的文件先备份，在关键操作完成后再将文件覆盖或者选择删除备份 第一步：确定敏感文件 敏感文件">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Git清除指定文件记录">
+<meta property="og:url" content="https://readchart.github.io/2021/02/10/Git%E6%B8%85%E9%99%A4%E6%8C%87%E5%AE%9A%E6%96%87%E4%BB%B6%E8%AE%B0%E5%BD%95/index.html">
+<meta property="og:site_name" content="记仇日记">
+<meta property="og:description" content="Git清除指定文件记录本文参考源：Mr.True@csdn Github Official Docs 起因是自己误操作将Intellij Idea的配置文件commit到git记录上面，考虑到部分配置涉及个人隐私，所以想清除掉指定文件的记录 建议在删除记录之前先将需要保存在本地但又不想commit到git记录的文件先备份，在关键操作完成后再将文件覆盖或者选择删除备份 第一步：确定敏感文件 敏感文件">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://i.imgur.com/jGX0LhW.png">
+<meta property="article:published_time" content="2021-02-10T01:24:43.000Z">
+<meta property="article:modified_time" content="2021-02-10T01:24:43.000Z">
+<meta property="article:author" content="Richard T">
+<meta property="article:tag" content="Git">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/jGX0LhW.png">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>Git清除指定文件记录</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+      
+<link rel="stylesheet" href="/css/rtl.css">
+
+    
+    <!-- rss -->
+    
+    
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a target="_blank" rel="noopener" href="http://github.com/bkdonions">Projects</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2021/03/03/Java%E6%B3%A8%E8%A7%A3%E4%B8%8E%E5%8F%8D%E5%B0%84/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" href="/2020/08/12/Redis%E5%AD%A6%E4%B9%A0/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://readchart.github.io/2021/02/10/Git%E6%B8%85%E9%99%A4%E6%8C%87%E5%AE%9A%E6%96%87%E4%BB%B6%E8%AE%B0%E5%BD%95/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://readchart.github.io/2021/02/10/Git%E6%B8%85%E9%99%A4%E6%8C%87%E5%AE%9A%E6%96%87%E4%BB%B6%E8%AE%B0%E5%BD%95/&text=Git清除指定文件记录"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://readchart.github.io/2021/02/10/Git%E6%B8%85%E9%99%A4%E6%8C%87%E5%AE%9A%E6%96%87%E4%BB%B6%E8%AE%B0%E5%BD%95/&title=Git清除指定文件记录"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://readchart.github.io/2021/02/10/Git%E6%B8%85%E9%99%A4%E6%8C%87%E5%AE%9A%E6%96%87%E4%BB%B6%E8%AE%B0%E5%BD%95/&is_video=false&description=Git清除指定文件记录"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Git清除指定文件记录&body=Check out this article: https://readchart.github.io/2021/02/10/Git%E6%B8%85%E9%99%A4%E6%8C%87%E5%AE%9A%E6%96%87%E4%BB%B6%E8%AE%B0%E5%BD%95/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://readchart.github.io/2021/02/10/Git%E6%B8%85%E9%99%A4%E6%8C%87%E5%AE%9A%E6%96%87%E4%BB%B6%E8%AE%B0%E5%BD%95/&title=Git清除指定文件记录"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://readchart.github.io/2021/02/10/Git%E6%B8%85%E9%99%A4%E6%8C%87%E5%AE%9A%E6%96%87%E4%BB%B6%E8%AE%B0%E5%BD%95/&title=Git清除指定文件记录"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://readchart.github.io/2021/02/10/Git%E6%B8%85%E9%99%A4%E6%8C%87%E5%AE%9A%E6%96%87%E4%BB%B6%E8%AE%B0%E5%BD%95/&title=Git清除指定文件记录"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://readchart.github.io/2021/02/10/Git%E6%B8%85%E9%99%A4%E6%8C%87%E5%AE%9A%E6%96%87%E4%BB%B6%E8%AE%B0%E5%BD%95/&title=Git清除指定文件记录"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://readchart.github.io/2021/02/10/Git%E6%B8%85%E9%99%A4%E6%8C%87%E5%AE%9A%E6%96%87%E4%BB%B6%E8%AE%B0%E5%BD%95/&name=Git清除指定文件记录&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://readchart.github.io/2021/02/10/Git%E6%B8%85%E9%99%A4%E6%8C%87%E5%AE%9A%E6%96%87%E4%BB%B6%E8%AE%B0%E5%BD%95/&t=Git清除指定文件记录"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Git%E6%B8%85%E9%99%A4%E6%8C%87%E5%AE%9A%E6%96%87%E4%BB%B6%E8%AE%B0%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">Git清除指定文件记录</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E7%A1%AE%E5%AE%9A%E6%95%8F%E6%84%9F%E6%96%87%E4%BB%B6"><span class="toc-number">1.1.</span> <span class="toc-text">第一步：确定敏感文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E6%B8%85%E9%99%A4%E7%9B%B8%E5%85%B3%E8%AE%B0%E5%BD%95"><span class="toc-number">1.2.</span> <span class="toc-text">第二步：清除相关记录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%9A%E5%BC%BA%E5%88%B6%E8%A6%86%E7%9B%96%E8%AE%B0%E5%BD%95"><span class="toc-number">1.3.</span> <span class="toc-text">第三步：强制覆盖记录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5%EF%BC%9A%E8%A7%A3%E9%99%A4%E5%AF%B9%E6%9C%AC%E5%9C%B0%E5%AD%98%E5%82%A8%E5%BA%93%E4%B8%AD%E7%9A%84%E6%89%80%E6%9C%89%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%BC%95%E7%94%A8%E5%92%8C%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86"><span class="toc-number">1.4.</span> <span class="toc-text">第四步：解除对本地存储库中的所有对象的引用和垃圾收集</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Git清除指定文件记录
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">记仇日记</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2021-02-10T01:24:43.000Z" itemprop="datePublished">2021-02-10</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Git/" rel="tag">Git</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="Git清除指定文件记录"><a href="#Git清除指定文件记录" class="headerlink" title="Git清除指定文件记录"></a>Git清除指定文件记录</h2><p>本文参考源：<a target="_blank" rel="noopener" href="https://blog.csdn.net/q258523454/article/details/83899911">Mr.True@csdn</a> <a target="_blank" rel="noopener" href="https://help.github.com/articles/removing-sensitive-data-from-a-repository/">Github Official Docs</a></p>
+<p>起因是自己误操作将Intellij Idea的配置文件commit到git记录上面，考虑到部分配置涉及个人隐私，所以想清除掉指定文件的记录</p>
+<p>建议在删除记录之前先将需要保存在本地但又不想commit到git记录的文件先备份，在关键操作完成后再将文件覆盖或者选择删除备份</p>
+<h3 id="第一步：确定敏感文件"><a href="#第一步：确定敏感文件" class="headerlink" title="第一步：确定敏感文件"></a>第一步：确定敏感文件</h3><p><img src="https://i.imgur.com/jGX0LhW.png" alt="Git记录"></p>
+<p>敏感文件为Initial commit中的<code>.idea</code>、<code>target</code>和<code>*.iml</code></p>
+<p>相对于<strong>项目git记录根目录</strong>为：<br><code>./.idea</code><br><code>./target</code><br><code>./*.iml</code></p>
+<h3 id="第二步：清除相关记录"><a href="#第二步：清除相关记录" class="headerlink" title="第二步：清除相关记录"></a>第二步：清除相关记录</h3><p>通过<code>git filter-branch</code>清除相关文件记录并且重写所有tags</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git filter-branch --force --index-filter \</span><br><span class="line">  <span class="string">&quot;git rm --cached --ignore-unmatch PATH-TO-YOUR-FILE-WITH-SENSITIVE-DATA&quot;</span> \</span><br><span class="line">  --prune-empty --tag-name-filter cat -- --all</span><br></pre></td></tr></table></figure>
+
+<p>此处我使用的命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git filter-branch --force --index-filter \</span><br><span class="line">  <span class="string">&quot;git rm --cached --ignore-unmatch .idea target *.iml&quot;</span> \</span><br><span class="line">  --prune-empty --tag-name-filter cat -- --all</span><br></pre></td></tr></table></figure>
+
+<h3 id="第三步：强制覆盖记录"><a href="#第三步：强制覆盖记录" class="headerlink" title="第三步：强制覆盖记录"></a>第三步：强制覆盖记录</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git push origin --force --all</span><br><span class="line">git push origin --force --tags</span><br></pre></td></tr></table></figure>
+
+<h3 id="第四步：解除对本地存储库中的所有对象的引用和垃圾收集"><a href="#第四步：解除对本地存储库中的所有对象的引用和垃圾收集" class="headerlink" title="第四步：解除对本地存储库中的所有对象的引用和垃圾收集"></a>第四步：解除对本地存储库中的所有对象的引用和垃圾收集</h3><p>确保没有什么问题之后,强制解除对本地存储库中的所有对象的引用和垃圾收集</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git for-each-ref --format=<span class="string">&#x27;delete %(refname)&#x27;</span> refs/original | git update-ref --stdin</span><br><span class="line">git reflog expire --expire=now --all</span><br><span class="line">git gc --prune=now</span><br></pre></td></tr></table></figure>
+
+<p>至此已经完全清除相关记录了</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a target="_blank" rel="noopener" href="http://github.com/bkdonions">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Git%E6%B8%85%E9%99%A4%E6%8C%87%E5%AE%9A%E6%96%87%E4%BB%B6%E8%AE%B0%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">Git清除指定文件记录</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E7%A1%AE%E5%AE%9A%E6%95%8F%E6%84%9F%E6%96%87%E4%BB%B6"><span class="toc-number">1.1.</span> <span class="toc-text">第一步：确定敏感文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E6%B8%85%E9%99%A4%E7%9B%B8%E5%85%B3%E8%AE%B0%E5%BD%95"><span class="toc-number">1.2.</span> <span class="toc-text">第二步：清除相关记录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%9A%E5%BC%BA%E5%88%B6%E8%A6%86%E7%9B%96%E8%AE%B0%E5%BD%95"><span class="toc-number">1.3.</span> <span class="toc-text">第三步：强制覆盖记录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5%EF%BC%9A%E8%A7%A3%E9%99%A4%E5%AF%B9%E6%9C%AC%E5%9C%B0%E5%AD%98%E5%82%A8%E5%BA%93%E4%B8%AD%E7%9A%84%E6%89%80%E6%9C%89%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%BC%95%E7%94%A8%E5%92%8C%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86"><span class="toc-number">1.4.</span> <span class="toc-text">第四步：解除对本地存储库中的所有对象的引用和垃圾收集</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://readchart.github.io/2021/02/10/Git%E6%B8%85%E9%99%A4%E6%8C%87%E5%AE%9A%E6%96%87%E4%BB%B6%E8%AE%B0%E5%BD%95/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://readchart.github.io/2021/02/10/Git%E6%B8%85%E9%99%A4%E6%8C%87%E5%AE%9A%E6%96%87%E4%BB%B6%E8%AE%B0%E5%BD%95/&text=Git清除指定文件记录"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://readchart.github.io/2021/02/10/Git%E6%B8%85%E9%99%A4%E6%8C%87%E5%AE%9A%E6%96%87%E4%BB%B6%E8%AE%B0%E5%BD%95/&title=Git清除指定文件记录"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://readchart.github.io/2021/02/10/Git%E6%B8%85%E9%99%A4%E6%8C%87%E5%AE%9A%E6%96%87%E4%BB%B6%E8%AE%B0%E5%BD%95/&is_video=false&description=Git清除指定文件记录"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Git清除指定文件记录&body=Check out this article: https://readchart.github.io/2021/02/10/Git%E6%B8%85%E9%99%A4%E6%8C%87%E5%AE%9A%E6%96%87%E4%BB%B6%E8%AE%B0%E5%BD%95/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://readchart.github.io/2021/02/10/Git%E6%B8%85%E9%99%A4%E6%8C%87%E5%AE%9A%E6%96%87%E4%BB%B6%E8%AE%B0%E5%BD%95/&title=Git清除指定文件记录"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://readchart.github.io/2021/02/10/Git%E6%B8%85%E9%99%A4%E6%8C%87%E5%AE%9A%E6%96%87%E4%BB%B6%E8%AE%B0%E5%BD%95/&title=Git清除指定文件记录"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://readchart.github.io/2021/02/10/Git%E6%B8%85%E9%99%A4%E6%8C%87%E5%AE%9A%E6%96%87%E4%BB%B6%E8%AE%B0%E5%BD%95/&title=Git清除指定文件记录"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://readchart.github.io/2021/02/10/Git%E6%B8%85%E9%99%A4%E6%8C%87%E5%AE%9A%E6%96%87%E4%BB%B6%E8%AE%B0%E5%BD%95/&title=Git清除指定文件记录"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://readchart.github.io/2021/02/10/Git%E6%B8%85%E9%99%A4%E6%8C%87%E5%AE%9A%E6%96%87%E4%BB%B6%E8%AE%B0%E5%BD%95/&name=Git清除指定文件记录&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://readchart.github.io/2021/02/10/Git%E6%B8%85%E9%99%A4%E6%8C%87%E5%AE%9A%E6%96%87%E4%BB%B6%E8%AE%B0%E5%BD%95/&t=Git清除指定文件记录"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2021
+    Richard T
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a target="_blank" rel="noopener" href="http://github.com/bkdonions">Projects</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+
+    <!-- jquery -->
+
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+
+<!-- clipboard -->
+
+  
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+    <script type="text/javascript">
+        (function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-173531821-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+
+<!-- Baidu Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>
